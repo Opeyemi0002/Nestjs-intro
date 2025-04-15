@@ -11,11 +11,8 @@ export class UsersController {
     return this.userService.findById(id);
   }
 
-  @Post('/post')
-  public postUsers(@Body() body: CreateUserDto) {
-    console.log(body);
-    return {
-      user: body,
-    };
+  @Post('/new')
+  public async SignUp(@Body() body: CreateUserDto) {
+    return await this.userService.createUser(body);
   }
 }
