@@ -9,12 +9,13 @@ import {
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(96)
   firstName: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  @MaxLength(98)
+  @MaxLength(96)
   lastName: string;
 
   @IsString()
@@ -23,9 +24,11 @@ export class CreateUserDto {
 
   @IsEmail()
   @IsNotEmpty()
+  @MaxLength(96)
   email: string;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(96)
   password: string;
 }
