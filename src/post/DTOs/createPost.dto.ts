@@ -15,7 +15,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { createPostMetaOptionsDto } from './createpost.metaoptions.dto';
+import { createPostMetaOptionsDto } from '../../metaoption/Dtos/createpost.metaoptions.dto';
 export class createPostDtO {
   @IsString()
   @MinLength(4)

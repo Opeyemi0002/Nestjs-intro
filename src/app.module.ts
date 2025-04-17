@@ -6,6 +6,8 @@ import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TagsModule } from './tags/tags.module';
+import { MetaoptionModule } from './metaoption/metaoption.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         synchronize: true,
       }),
     }),
+    TagsModule,
+    MetaoptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
