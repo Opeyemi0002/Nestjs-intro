@@ -11,6 +11,7 @@ import {
   IsString,
   IsUrl,
   Matches,
+  MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
@@ -18,6 +19,7 @@ import { createPostMetaOptionsDto } from './createpost.metaoptions.dto';
 export class createPostDtO {
   @IsString()
   @MinLength(4)
+  @MaxLength(512)
   @IsNotEmpty()
   title: string;
 
@@ -27,6 +29,7 @@ export class createPostDtO {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(56)
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message:
       'a slug should be only small letter and uses only "-" and without spaces. for example "my-url"',
@@ -47,6 +50,7 @@ export class createPostDtO {
   schema?: string;
 
   @IsString()
+  @MaxLength(1024)
   @IsOptional()
   @IsUrl()
   featuredImageUrl?: string;

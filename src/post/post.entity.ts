@@ -11,28 +11,58 @@ export class post {
   @Column({
     type: 'varchar',
     length: 512,
+    nullable: false,
   })
   title: string;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: postType,
+    nullable: false,
+    default: postType.POST,
+  })
   postType: postType;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 56,
+    nullable: false,
+    unique: true,
+  })
   slug: string;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: postStatus,
+    nullable: false,
+    default: postStatus.DRAFT,
+  })
   status: postStatus;
 
-  @Column()
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
   content?: string;
 
-  @Column()
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
   schema?: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    unique: true,
+    length: 1024,
+  })
   featuredImageUrl?: string;
 
-  @Column()
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
   publishON?: Date;
 
   @Column()
