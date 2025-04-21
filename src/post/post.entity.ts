@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { postType } from './enum/postType.enum';
 import { postStatus } from './enum/poststatus.enum';
-import { createPostMetaOptionsDto } from '../metaoption/Dtos/createpost.metaoptions.dto';
+import { CreatePostMetaOptionsDto } from '../metaoption/Dtos/createpost.metaoptions.dto';
 import { MetaOption } from 'src/metaoption/metaoption.entity';
 
 @Entity()
@@ -70,11 +70,11 @@ export class Post {
     type: 'timestamp',
     nullable: true,
   })
-  publishON?: Date;
+  publishedOn?: Date;
 
   @OneToOne(() => MetaOption)
   @JoinColumn()
-  metaOptions?: MetaOption;
+  metaOptions?: MetaOption | null;
 
-  // tags?: string[];
+  tags?: string[];
 }

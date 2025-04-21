@@ -18,8 +18,8 @@ export class MetaOption {
   metaValue: string;
 
   @CreateDateColumn()
-  createdate: Date;
+  createdate?: Date;
 
   @UpdateDateColumn()
-  updateDate: Date;
+  updateDate?: Date;
 }

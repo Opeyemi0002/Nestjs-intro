@@ -15,8 +15,9 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { createPostMetaOptionsDto } from '../../metaoption/Dtos/createpost.metaoptions.dto';
-export class createPostDtO {
+import { CreatePostMetaOptionsDto } from '../../metaoption/Dtos/createpost.metaoptions.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+export class CreatePostDto {
   @IsString()
   @MinLength(4)
   @MaxLength(512)
@@ -65,9 +66,21 @@ export class createPostDtO {
   @MinLength(3)
   tags?: string[];
 
+  @ApiPropertyOptional({
+    required: false,
+    items: {
+      type: 'object',
+      properties: {
+        metaValue: {
+          type: 'json',
+          description: 'the metvalue is a JSON string',
+          example: '{"sidenarEnabled":true}',
+        },
+      },
+    },
+  })
   @IsOptional()
-  @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => createPostMetaOptionsDto)
-  metaOptions?: createPostMetaOptionsDto[];
+  @Type(() => CreatePostMetaOptionsDto)
+  metaOptions?: CreatePostMetaOptionsDto | null;
 }
