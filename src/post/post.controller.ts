@@ -6,9 +6,9 @@ import { CreatePostDto } from './DTOs/createPost.dto';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Get()
+  @Get('/:userId')
   getPosts(@Param('userId') userId: string) {
-    return this.postService.getPosts(userId);
+    return this.postService.findall(userId);
   }
 
   @Post('new')

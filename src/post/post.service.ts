@@ -17,27 +17,18 @@ export class PostService {
   ) {}
 
   async create(body: CreatePostDto) {
-    // let metaOption = body.metaOptions
-    //   ? this.metaOptionsRepository.create(body.metaOptions)
-    //   : null;
-
-    // if (metaOption) {
-    //   await this.metaOptionsRepository.save(metaOption);
-    // }
-
     let post = this.postRepository.create(body);
 
-    // if (metaOption) {
-    //   post.metaOptions = metaOption;
-    // }
     return await this.postRepository.save(post);
   }
 
-  getPosts(userId: string) {
+  async findall(userId: string) {
     try {
       const user = this.usersService.findById(userId);
 
-      return user;
+      let post = await this.postRepository.find();
+
+      return post;
     } catch (err) {}
   }
 }
