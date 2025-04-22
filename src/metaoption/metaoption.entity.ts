@@ -1,7 +1,9 @@
+import { Post } from 'src/post/post.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -16,6 +18,8 @@ export class MetaOption {
     nullable: false,
   })
   metaValue: string;
+  @OneToOne(() => Post, (post) => post.metaOptions)
+  post: Post;
 
   @CreateDateColumn()
   createdate?: Date;

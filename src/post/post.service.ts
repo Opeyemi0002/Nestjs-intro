@@ -33,18 +33,24 @@ export class PostService {
   }
 
   async delete(id: number) {
-    let post = await this.postRepository.findOneBy({
-      id,
-    });
+    let post = await this.postRepository.findOneBy({ id });
 
-    if (post) {
-      await this.postRepository.delete({ id });
-    } else {
-      return 'Post is not availble';
+    if (post && post.metaOptions) {
+      let inversePost = await this.metaOptionsRepository.findOne({
+        where: { id: post.metaOptions.id },
+        relations: { post: true },
+      });
+      console.log(inversePost);
     }
-    if (post?.metaOptions) {
-      await this.metaOptionsRepository.delete(post.metaOptions.id);
-      return { status: 'Deleted' };
-    }
+
+    // if (post) {
+    //   await this.postRepository.delete({ id });
+    // } else {
+    //   return 'Post is not availble';
+    // }
+    // if (post?.metaOptions) {
+    //   await this.metaOptionsRepository.delete(post.metaOptions.id);
+    //   return { status: 'Deleted' };
+    //}
   }
 }
