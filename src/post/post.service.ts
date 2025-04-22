@@ -31,4 +31,20 @@ export class PostService {
       return post;
     } catch (err) {}
   }
+
+  async delete(id: number) {
+    let post = await this.postRepository.findOneBy({
+      id,
+    });
+
+    if (post) {
+      await this.postRepository.delete({ id });
+    } else {
+      return 'Post is not availble';
+    }
+    if (post?.metaOptions) {
+      await this.metaOptionsRepository.delete(post.metaOptions.id);
+      return { status: 'Deleted' };
+    }
+  }
 }
