@@ -2,6 +2,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -11,6 +13,7 @@ import { postStatus } from './enum/poststatus.enum';
 import { CreatePostMetaOptionsDto } from '../metaoption/Dtos/createpost.metaoptions.dto';
 import { MetaOption } from 'src/metaoption/metaoption.entity';
 import { User } from 'src/users/user.entity';
+import { Tag } from 'src/tags/tag.entity';
 
 @Entity()
 export class Post {
@@ -82,6 +85,7 @@ export class Post {
 
   @ManyToOne(() => User, (user) => user.posts)
   author: User;
-
-  tags?: string[];
+  @ManyToMany(() => Tag)
+  @JoinTable()
+  tags?: Tag[];
 }

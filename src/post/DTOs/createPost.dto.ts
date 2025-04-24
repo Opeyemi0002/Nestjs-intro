@@ -19,6 +19,7 @@ import {
 import { CreatePostMetaOptionsDto } from '../../metaoption/Dtos/createpost.metaoptions.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/DTOs/createUserDto';
+import { CreateTagDto } from 'src/tags/Dtos/createtag.dto';
 export class CreatePostDto {
   @IsString()
   @MinLength(4)
@@ -62,11 +63,10 @@ export class CreatePostDto {
   @IsOptional()
   publishedOn?: Date;
 
-  @IsString({ each: true })
+  @IsInt({ each: true })
   @IsOptional()
   @IsArray()
-  @MinLength(3)
-  tags?: string[];
+  tags?: number[];
 
   @ApiPropertyOptional({
     required: false,
