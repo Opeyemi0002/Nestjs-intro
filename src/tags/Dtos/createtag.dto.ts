@@ -11,7 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class createTagDto {
+export class CreateTagDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
