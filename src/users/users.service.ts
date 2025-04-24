@@ -30,14 +30,7 @@ export class UsersService {
     } catch (err) {}
   }
 
-  findById(id: string) {
-    try {
-      return {
-        firstName: 'Opeyemi',
-        lastName: 'Seun',
-        email: 'opsy5916@gmail.com',
-        auth: this.authService.isAuth(id),
-      };
-    } catch (err) {}
+  async findById(id: number) {
+    return await this.userRepository.findOneBy({ id });
   }
 }

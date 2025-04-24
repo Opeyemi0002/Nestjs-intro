@@ -4,6 +4,7 @@ import { postStatus } from '../enum/poststatus.enum';
 import {
   IsArray,
   IsEnum,
+  IsInt,
   IsISO8601,
   IsJSON,
   IsNotEmpty,
@@ -16,7 +17,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreatePostMetaOptionsDto } from '../../metaoption/Dtos/createpost.metaoptions.dto';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/users/DTOs/createUserDto';
 export class CreatePostDto {
   @IsString()
   @MinLength(4)
@@ -83,4 +85,12 @@ export class CreatePostDto {
   @ValidateNested({ each: true })
   @Type(() => CreatePostMetaOptionsDto)
   metaOptions?: CreatePostMetaOptionsDto;
+  @ApiProperty({
+    required: true,
+    type: 'number',
+    example: 1,
+  })
+  @IsInt()
+  @IsNotEmpty()
+  authorId: number;
 }

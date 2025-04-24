@@ -17,16 +17,23 @@ export class PostService {
   ) {}
 
   async create(body: CreatePostDto) {
-    let post = this.postRepository.create(body);
-
+    //find author
+    const author = await this.usersService.findById(body.authorId);
+    //then create post
+    if (!author) {
+      return 'author not found';
+    }
+    let post = this.postRepository.create({ ...body, author });
     return await this.postRepository.save(post);
   }
 
-  async findall(userId: string) {
+  async findall(userId: number) {
     try {
       const user = this.usersService.findById(userId);
 
-      let post = await this.postRepository.find();
+      let post = await this.postRepository.find({
+        relations: { metaOptions: true, author: true },
+      });
 
       return post;
     } catch (err) {}

@@ -8,11 +8,7 @@ export class AuthService {
     private readonly userService: UsersService,
   ) {}
 
-  isAuth(id: string) {
+  isAuth(id: number) {
     const user = this.userService.findById(id);
-    if (user) {
-      return true;
-    }
-    return false;
   }
 }
