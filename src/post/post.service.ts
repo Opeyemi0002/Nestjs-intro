@@ -6,6 +6,7 @@ import { MetaOption } from 'src/metaoption/metaoption.entity';
 import { Repository } from 'typeorm';
 import { Post } from './post.entity';
 import { TagsService } from 'src/tags/tags.service';
+import { PatchPostDto } from './DTOs/patchpost.dto';
 
 @Injectable()
 export class PostService {
@@ -48,5 +49,29 @@ export class PostService {
 
   async delete(id: number) {
     await this.postRepository.delete({ id });
+  }
+
+  async update(body: PatchPostDto) {
+    if (!body.tags) {
+      return 'Tags cannot be found';
+    }
+    let tags = await this.TagService.findMultipleTags(body.tags);
+
+    let post = await this.postRepository.findOneBy({ id: body.id });
+
+    if (!post) {
+      return 'Post not found';
+    }
+    post.title = body.title ?? post.title;
+    post.slug = body.slug ?? post.slug;
+    post.status = body.status ?? post.status;
+    post.content = body.content ?? post.content;
+    post.schema = body.schema ?? post.schema;
+    post.postType = body.postType ?? post.postType;
+    post.featuredImageUrl = body.featuredImageUrl ?? post.featuredImageUrl;
+    post.publishedOn = body.publishedOn ?? post.publishedOn;
+    post.tags = tags;
+
+    return await this.postRepository.save(post);
   }
 }

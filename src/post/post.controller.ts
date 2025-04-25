@@ -7,9 +7,11 @@ import {
   Delete,
   Query,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './DTOs/createPost.dto';
+import { PatchPostDto } from './DTOs/patchpost.dto';
 
 @Controller('post')
 export class PostController {
@@ -23,6 +25,11 @@ export class PostController {
   @Post('new')
   async createPost(@Body() body: CreatePostDto) {
     return await this.postService.create(body);
+  }
+
+  @Patch('update')
+  async updatePost(@Body() body: PatchPostDto) {
+    return await this.postService.update(body);
   }
 
   @Delete('/delete')

@@ -85,6 +85,7 @@ export class Post {
 
   @ManyToOne(() => User, (user) => user.posts)
   author: User;
+
   @ManyToMany(() => Tag)
   @JoinTable()
   tags?: Tag[];
