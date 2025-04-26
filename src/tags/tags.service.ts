@@ -13,10 +13,17 @@ export class TagsService {
     let tag = this.tagRepository.create(body);
     return await this.tagRepository.save(tag);
   }
+
   async findMultipleTags(tags: number[]) {
     let results = await this.tagRepository.find({
       where: { id: In(tags) },
     });
     return results;
+  }
+
+  async delete(id: number) {
+    await this.tagRepository.delete(id);
+
+    return { status: 'Deleted', id };
   }
 }

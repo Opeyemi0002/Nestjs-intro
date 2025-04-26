@@ -40,7 +40,11 @@ export class PostService {
       const user = this.usersService.findById(userId);
 
       let post = await this.postRepository.find({
-        relations: { metaOptions: true, author: true },
+        relations: {
+          metaOptions: true,
+          author: true,
+          tags: true,
+        },
       });
 
       return post;
