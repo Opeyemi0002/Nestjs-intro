@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './DTOs/createUserDto';
 import { UsersService } from './users.service';
@@ -23,5 +24,11 @@ export class UsersController {
   @Post('/new')
   public async SignUp(@Body() body: CreateUserDto) {
     return await this.userService.createUser(body);
+  }
+
+  @Get('/profile/user')
+  async find() {
+    console.log('Controller hit');
+    return await this.userService.getall();
   }
 }

@@ -26,4 +26,10 @@ export class TagsService {
 
     return { status: 'Deleted', id };
   }
+
+  async softRemove(id: number) {
+    await this.tagRepository.softDelete(id);
+
+    return { status: 'Deleted', id };
+  }
 }
