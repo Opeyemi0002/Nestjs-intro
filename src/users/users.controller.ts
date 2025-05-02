@@ -31,4 +31,9 @@ export class UsersController {
     console.log('Controller hit');
     return await this.userService.getall();
   }
+
+  @Get('/users/all')
+  async findall(limit: number, id: number) {
+    return;
+  }
 }
