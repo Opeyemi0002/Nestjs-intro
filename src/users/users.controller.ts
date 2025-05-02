@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './DTOs/createUserDto';
 import { UsersService } from './users.service';
+import { CreateManyUserDto } from './DTOs/createManyUser.dto';
 //import { CreateParamDto } from './DTOs/createParamDto';
 
 @Controller('users')
@@ -35,5 +36,10 @@ export class UsersController {
   @Get('/users/all')
   async findall(limit: number, id: number) {
     return;
+  }
+
+  @Post('/create/many')
+  async createManyUsers(@Body() body: CreateManyUserDto) {
+    return this.userService.createMany(body);
   }
 }

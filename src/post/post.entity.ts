@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -7,6 +8,7 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { postType } from './enum/postType.enum';
 import { postStatus } from './enum/poststatus.enum';
@@ -89,4 +91,9 @@ export class Post {
   @ManyToMany(() => Tag, (tag) => tag.posts, { eager: true })
   @JoinTable()
   tags?: Tag[];
+  @CreateDateColumn()
+  createdate?: Date;
+
+  @UpdateDateColumn()
+  updateDate?: Date;
 }

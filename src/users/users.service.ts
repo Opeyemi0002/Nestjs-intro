@@ -16,6 +16,8 @@ import { CreateUserDto } from './DTOs/createUserDto';
 import { ConfigType } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import profileConfig from './config/profile.config';
+import { UsersCreateManyProvider } from './users-create-many.provider';
+import { CreateManyUserDto } from './DTOs/createManyUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -25,7 +27,7 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @Inject(profileConfig.KEY)
     private readonly profileConfiguration: ConfigType<typeof profileConfig>,
-    private readonly dataSource: DataSource,
+    private readonly usersCreateManyProvider: UsersCreateManyProvider,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -94,34 +96,7 @@ export class UsersService {
       );
     }
   }
-
-  async createMany(createUserDto: CreateUserDto[]) {
-    let users: User[] = [];
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-
-    try {
-      await queryRunner.startTransaction();
-      for (let user of createUserDto) {
-        let newUser = queryRunner.manager.create(User, user);
-        let result = await queryRunner.manager.save(newUser);
-
-        users.push(result);
-      }
-      await queryRunner.commitTransaction();
-      return { message: 'Users created succesfully', users };
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Transaction failed while creating users',
-          error: err.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    } finally {
-      await queryRunner.release();
-    }
+  async createMany(createManyUserDto: CreateManyUserDto) {
+    return await this.usersCreateManyProvider.createMany(createManyUserDto);
   }
 }
