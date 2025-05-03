@@ -12,13 +12,18 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './DTOs/createPost.dto';
 import { PatchPostDto } from './DTOs/patchpost.dto';
+import { getPostsDto } from './DTOs/getPost.dto';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get('/:userId')
-  getPosts(@Param('userId', new ParseIntPipe()) userId: number) {
+  getPosts(
+    @Param('userId', new ParseIntPipe()) userId: number,
+    @Query() postquery: getPostsDto,
+  ) {
+    console.log(postquery);
     return this.postService.findall(userId);
   }
 

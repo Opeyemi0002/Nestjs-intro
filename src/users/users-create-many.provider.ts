@@ -9,14 +9,17 @@ export class UsersCreateManyProvider {
   constructor(private readonly dataSource: DataSource) {}
 
   async createMany(createManyUserDto: CreateManyUserDto) {
-    let users: User[] = [];
     const queryRunner = this.dataSource.createQueryRunner();
+    let users: User[] = [];
+    let isTransactionStarted = false;
 
     try {
-      await queryRunner.connect(); // Move inside try block for safety
-      queryRunner.startTransaction();
+      await queryRunner.connect();
 
-      for (let user of createManyUserDto.users) {
+      queryRunner.startTransaction();
+      isTransactionStarted = true;
+
+      for (const user of createManyUserDto.users) {
         const newUser = queryRunner.manager.create(User, user);
         const result = await queryRunner.manager.save(newUser);
         users.push(result);
@@ -26,16 +29,22 @@ export class UsersCreateManyProvider {
 
       return { message: 'Users created successfully', users };
     } catch (err) {
-      try {
-        await queryRunner.rollbackTransaction();
-      } catch (rollbackError) {
-        throw rollbackError; // Optional: log rollback error if necessary
+      if (isTransactionStarted) {
+        try {
+          await queryRunner.rollbackTransaction();
+        } catch (rollbackError) {
+          throw rollbackError; // Optional: log rollback failure (rare but possible)
+        }
       }
+
+      const isConnectionError = !isTransactionStarted;
 
       throw new HttpException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Transaction failed while creating users',
+          message: isConnectionError
+            ? 'Database connection failed while creating users'
+            : 'Transaction failed while creating users',
           error: err?.message || 'Unknown error',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -44,38 +53,8 @@ export class UsersCreateManyProvider {
       try {
         await queryRunner.release();
       } catch (releaseError) {
-        throw releaseError; // Optional: log release error if necessary
+        throw releaseError; // Optional: log release failure
       }
     }
   }
-
-  // async createMany(createManyUserDto: CreateManyUserDto) {
-  //   let users: User[] = [];
-  //   const queryRunner = this.dataSource.createQueryRunner();
-  //   await queryRunner.connect();
-
-  //   try {
-  //     await queryRunner.startTransaction();
-  //     for (let user of createManyUserDto.users) {
-  //       let newUser = queryRunner.manager.create(User, user);
-  //       let result = await queryRunner.manager.save(newUser);
-
-  //       users.push(result);
-  //     }
-  //     await queryRunner.commitTransaction();
-  //     return { message: 'Users created succesfully', users };
-  //   } catch (err) {
-  //     await queryRunner.rollbackTransaction();
-  //     throw new HttpException(
-  //       {
-  //         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-  //         message: 'Transaction failed while creating users',
-  //         error: err.message,
-  //       },
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //     );
-  //   } finally {
-  //     await queryRunner.release();
-  //   }
-  // }
 }
