@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Post } from './post.entity';
 import { TagsService } from 'src/tags/tags.service';
 import { PatchPostDto } from './DTOs/patchpost.dto';
+import { getPostsDto } from './DTOs/getPost.dto';
 
 @Injectable()
 export class PostService {
@@ -35,7 +36,7 @@ export class PostService {
     return await this.postRepository.save(post);
   }
 
-  async findall(userId: number) {
+  async findall(userId: number, postquery: getPostsDto) {
     try {
       const user = this.usersService.findById(userId);
 
@@ -45,6 +46,8 @@ export class PostService {
           author: true,
           tags: true,
         },
+        take: postquery.limit,
+        skip: (postquery.page - 1) * postquery.limit,
       });
 
       return post;

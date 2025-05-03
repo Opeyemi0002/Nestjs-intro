@@ -24,7 +24,7 @@ export class PostController {
     @Query() postquery: getPostsDto,
   ) {
     console.log(postquery);
-    return this.postService.findall(userId);
+    return this.postService.findall(userId, postquery);
   }
 
   @Post('new')
