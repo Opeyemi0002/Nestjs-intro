@@ -8,6 +8,9 @@ import { Post } from './post.entity';
 import { TagsService } from 'src/tags/tags.service';
 import { PatchPostDto } from './DTOs/patchpost.dto';
 import { getPostsDto } from './DTOs/getPost.dto';
+import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { PaginationQueryDto } from 'src/common/pagination/Dtos/pagintion-query.dto';
+import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider';
 
 @Injectable()
 export class PostService {
@@ -18,6 +21,7 @@ export class PostService {
     private readonly postRepository: Repository<Post>,
     private readonly usersService: UsersService,
     private readonly TagService: TagsService,
+    private readonly paginatedProvider: PaginationProvider,
   ) {}
 
   async create(body: CreatePostDto) {
@@ -36,22 +40,34 @@ export class PostService {
     return await this.postRepository.save(post);
   }
 
-  async findall(userId: number, postquery: getPostsDto) {
+  async findall(
+    userId: number,
+    postquery: getPostsDto,
+  ): Promise<Paginated<Post>> {
     try {
-      const user = this.usersService.findById(userId);
-
-      let post = await this.postRepository.find({
-        relations: {
-          metaOptions: true,
-          author: true,
-          tags: true,
+      let posts = await this.paginatedProvider.paginateQuery(
+        {
+          limit: postquery.limit,
+          page: postquery.page,
         },
-        take: postquery.limit,
-        skip: (postquery.page - 1) * postquery.limit,
-      });
+        this.postRepository,
+      );
+      //const user = this.usersService.findById(userId);
 
-      return post;
-    } catch (err) {}
+      // let post = await this.postRepository.find({
+      //   relations: {
+      //     metaOptions: true,
+      //     author: true,
+      //     tags: true,
+      //   },
+      //   take: postquery.limit,
+      //   skip: (postquery.page - 1) * postquery.limit,
+      // });
+
+      return posts;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async delete(id: number) {

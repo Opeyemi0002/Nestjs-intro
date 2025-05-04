@@ -23,7 +23,6 @@ export class PostController {
     @Param('userId', new ParseIntPipe()) userId: number,
     @Query() postquery: getPostsDto,
   ) {
-    console.log(postquery);
     return this.postService.findall(userId, postquery);
   }
 
