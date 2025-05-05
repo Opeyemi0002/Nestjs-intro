@@ -99,4 +99,15 @@ export class UsersService {
   async createMany(createManyUserDto: CreateManyUserDto) {
     return await this.usersCreateManyProvider.createMany(createManyUserDto);
   }
+  async findUser(email: string) {
+    try {
+      let user = await this.userRepository.findOneBy({ email });
+      if (!user) {
+        throw new BadRequestException();
+      }
+      return user;
+    } catch (err) {
+      throw err;
+    }
+  }
 }
