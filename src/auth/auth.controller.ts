@@ -9,4 +9,7 @@ export class AuthController {
   checkAuth(@Param('id', ParseIntPipe) id: number) {
     return this.authService.isAuth(id);
   }
+
+  @Post()
+  @signInUser(){}
 }
