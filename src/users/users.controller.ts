@@ -8,11 +8,13 @@ import {
   Body,
   ParseIntPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './DTOs/createUserDto';
 import { UsersService } from './users.service';
 import { CreateManyUserDto } from './DTOs/createManyUser.dto';
 import { CreateUserProvider } from './provider/create-user.provider';
+import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
 //import { CreateParamDto } from './DTOs/createParamDto';
 
 @Controller('users')
@@ -42,7 +44,6 @@ export class UsersController {
   async findall(limit: number, id: number) {
     return;
   }
-
   @Post('/create/many')
   async createManyUsers(@Body() body: CreateManyUserDto) {
     return this.userService.createMany(body);
