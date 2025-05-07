@@ -9,12 +9,15 @@ import {
   ParseIntPipe,
   Query,
   UseGuards,
+  SetMetadata,
 } from '@nestjs/common';
 import { CreateUserDto } from './DTOs/createUserDto';
 import { UsersService } from './users.service';
 import { CreateManyUserDto } from './DTOs/createManyUser.dto';
 import { CreateUserProvider } from './provider/create-user.provider';
 import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enum/auth-type.enum';
 //import { CreateParamDto } from './DTOs/createParamDto';
 
 @Controller('users')
@@ -29,6 +32,7 @@ export class UsersController {
   }
 
   @Post('/new')
+  @Auth(AuthType.Bearer, AuthType.None)
   public async SignUp(@Body() body: CreateUserDto) {
     return await this.createUserProvider.createUser(body);
     //return await this.userService.createUser(body);

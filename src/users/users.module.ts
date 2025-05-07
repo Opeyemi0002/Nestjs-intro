@@ -17,30 +17,9 @@ import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guar
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([User]),
     ConfigModule.forFeature(profileConfig),
-    ConfigModule.forFeature(jwtConfig),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('jwt.key'),
-        signOptions: {
-          expiresIn: configService.get('jwt.expiry'),
-          audience: configService.get('jwt.audience'),
-          issuer: configService.get('jwt.issuer'),
-        },
-      }),
-    }),
   ],
   controllers: [UsersController],
-  providers: [
-    UsersService,
-    UsersCreateManyProvider,
-    CreateUserProvider,
-    {
-      provide: APP_GUARD,
-      useClass: AccessTokenGuard,
-    },
-  ],
+  providers: [UsersService, UsersCreateManyProvider, CreateUserProvider],
   exports: [UsersService],
 })
 export class UsersModule {}

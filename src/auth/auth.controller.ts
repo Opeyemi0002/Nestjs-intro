@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -10,6 +12,8 @@ import {
 import { AuthService } from './auth.service';
 import { SignInDto } from './Dtos/signIn.dto';
 import { AccessTokenGuard } from './guards/access-token/access-token.guard';
+import { Auth } from './decorators/auth.decorator';
+import { AuthType } from './enum/auth-type.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -21,6 +25,8 @@ export class AuthController {
   }
   //@UseGuards(AccessTokenGuard)
   @Post('/signIn')
+  @HttpCode(HttpStatus.OK)
+  @Auth(AuthType.None, AuthType.Bearer)
   signInUser(@Body() body: SignInDto) {
     return this.authService.signIn(body);
   }
