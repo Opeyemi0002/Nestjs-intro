@@ -5,6 +5,8 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SignInDto } from './Dtos/signIn.dto';
@@ -14,6 +16,7 @@ import jwtConfig from './config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { ActiveUserData } from './interfaces/activeuserdata.interface';
 import { User } from 'src/users/user.entity';
+import { RefreshTokenDto } from './Dtos/refreshtoken.dto';
 
 @Injectable()
 export class AuthService {
@@ -60,18 +63,18 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      const accessToken = await this.jwtService.signAsync(
-        {
-          sub: user.id,
-          email: user.email,
-        } as ActiveUserData,
-        {
-          audience: this.jwtConfiguration.audience,
-          issuer: this.jwtConfiguration.issuer,
-          secret: this.jwtConfiguration.key,
-          expiresIn: this.jwtConfiguration.expiry,
-        },
-      );
+      // const accessToken = await this.jwtService.signAsync(
+      //   {
+      //     sub: user.id,
+      //     email: user.email,
+      //   } as ActiveUserData,
+      //   {
+      //     audience: this.jwtConfiguration.audience,
+      //     issuer: this.jwtConfiguration.issuer,
+      //     secret: this.jwtConfiguration.key,
+      //     expiresIn: this.jwtConfiguration.expiry,
+      //   },
+      // );
       const refreshToken = await this.generateRefreshToken(user);
       return {
         status: 'Success',
@@ -119,5 +122,43 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+  async refreshTokens(refreshTokenDto: RefreshTokenDto) {
+    try {
+      const { sub } = await this.jwtService.verifyAsync(
+        refreshTokenDto.refreshToken,
+        {
+          audience: this.jwtConfiguration.audience,
+          issuer: this.jwtConfiguration.issuer,
+          secret: this.jwtConfiguration.key,
+        },
+      );
+      const user = await this.userService.findById(sub);
+      if (!user) {
+        throw new UnauthorizedException('User not authorized');
+      }
+
+      return await this.generateRefreshToken(user);
+    } catch (err) {
+      if (err instanceof UnauthorizedException) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.UNAUTHORIZED,
+            message: 'UNAUTHORIZED',
+            error: err.message,
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'INTERNAL_SERVER_ERROR',
+          error: err.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
