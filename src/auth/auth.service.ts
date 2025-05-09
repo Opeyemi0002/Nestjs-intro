@@ -13,6 +13,7 @@ import { ConfigType } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { ActiveUserData } from './interfaces/activeuserdata.interface';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -67,13 +68,15 @@ export class AuthService {
         {
           audience: this.jwtConfiguration.audience,
           issuer: this.jwtConfiguration.issuer,
+          secret: this.jwtConfiguration.key,
           expiresIn: this.jwtConfiguration.expiry,
         },
       );
+      const refreshToken = await this.generateRefreshToken(user);
       return {
         status: 'Success',
         data: user,
-        token: accessToken,
+        token: refreshToken,
       };
     } catch (err) {
       if (err instanceof HttpException) {
@@ -87,5 +90,34 @@ export class AuthService {
         error: 'Internal Server Error',
       });
     }
+  }
+
+  async signInToken<T>(userId: number, expiresIn: number, payload?: T) {
+    return await this.jwtService.signAsync(
+      { sub: userId, ...payload },
+      {
+        audience: this.jwtConfiguration.audience,
+        issuer: this.jwtConfiguration.issuer,
+        secret: this.jwtConfiguration.key,
+        expiresIn: this.jwtConfiguration.refreshTokenExpiry,
+      },
+    );
+  }
+
+  async generateRefreshToken(user: User) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signInToken<Partial<ActiveUserData>>(
+        user.id,
+        this.jwtConfiguration.expiry,
+        { email: user.email },
+      ),
+
+      this.signInToken(user.id, this.jwtConfiguration.refreshTokenExpiry),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

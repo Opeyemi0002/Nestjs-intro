@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import { AccessTokenGuard } from '../access-token/access-token.guard';
 import { AuthType } from 'src/auth/enum/auth-type.enum';
 import { AUTH_TYPE_KEY } from 'src/auth/constants/auth.constants';
@@ -33,20 +32,21 @@ export class AuthenticationGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const authTypes = this.reflector.getAllAndOverride(AUTH_TYPE_KEY, [
+    const authTypes = (await this.reflector.getAllAndOverride(AUTH_TYPE_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]) ?? [AuthenticationGuard.defaultAuthType];
+    ])) ?? [AuthenticationGuard.defaultAuthType];
     const guards = authTypes.map((type) => this.authTypeGuardMap[type]).flat();
     const error = new UnauthorizedException();
 
     for (const instance of guards) {
-      const canActivate = await Promise.resolve(
-        instance.canActivate(context),
-      ).catch((err) => err);
-
-      if (canActivate) {
-        return true;
+      try {
+        const result = await instance.canActivate(context);
+        if (result) {
+          return true;
+        }
+      } catch (err) {
+        // Ignore and try next guard
       }
     }
 

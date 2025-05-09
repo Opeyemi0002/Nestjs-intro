@@ -6,4 +6,8 @@ export default registerAs('jwt', () => ({
   audience: process.env.JWT_TOKEN_AUDIENCE,
   issuer: process.env.JWT_TOKEN_ISSUER,
   expiry: getIntValidation(process.env.JWT_EXPIRY, '3600'),
+  refreshTokenExpiry: getIntValidation(
+    process.env.JWT__REFRESH_TOKEN_EXPIRY,
+    '46000',
+  ),
 }));

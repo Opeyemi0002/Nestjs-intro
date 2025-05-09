@@ -35,8 +35,7 @@ export class PostController {
     @Body() body: CreatePostDto,
     @ActiveUser() user: ActiveUserData,
   ) {
-    console.log(user);
-    //return await this.postService.create(body);
+    return await this.postService.create(body, user);
   }
 
   @Patch('update')

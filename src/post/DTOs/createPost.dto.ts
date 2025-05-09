@@ -3,6 +3,7 @@ import { postType } from '../enum/postType.enum';
 import { postStatus } from '../enum/poststatus.enum';
 import {
   IsArray,
+  IsDate,
   IsEnum,
   IsInt,
   IsISO8601,
@@ -59,7 +60,7 @@ export class CreatePostDto {
   @IsUrl()
   featuredImageUrl?: string;
 
-  @IsISO8601()
+  @IsDate()
   @IsOptional()
   publishedOn?: Date;
 
@@ -85,12 +86,12 @@ export class CreatePostDto {
   @ValidateNested({ each: true })
   @Type(() => CreatePostMetaOptionsDto)
   metaOptions?: CreatePostMetaOptionsDto;
-  @ApiProperty({
-    required: true,
-    type: 'number',
-    example: 1,
-  })
-  @IsInt()
-  @IsNotEmpty()
-  authorId: number;
+  // @ApiProperty({
+  //   required: true,
+  //   type: 'number',
+  //   example: 1,
+  // })
+  // @IsInt()
+  // @IsNotEmpty()
+  // authorId: number;
 }
