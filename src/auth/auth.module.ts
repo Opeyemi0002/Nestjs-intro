@@ -7,6 +7,8 @@ import { BcryptProvider } from './providers/bcrypt.provider';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
+import { GoogleAuthenticationController } from './social/google-authentication.controller';
+import { GoogleAuthenticationService } from './social/google-authentication.service';
 
 @Module({
   imports: [
@@ -25,10 +27,11 @@ import { JwtModule } from '@nestjs/jwt';
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, GoogleAuthenticationController],
   providers: [
     AuthService,
     { provide: HashingProvider, useClass: BcryptProvider },
+    GoogleAuthenticationService,
   ],
   exports: [AuthService, HashingProvider],
 })

@@ -12,6 +12,7 @@ import jwtConfig from 'src/auth/config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
+import { FindOneByGoogleIdProvider } from './provider/find-one-by-google-id.provider';
 @Module({
   imports: [
     forwardRef(() => AuthModule),
@@ -19,7 +20,7 @@ import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guar
     ConfigModule.forFeature(profileConfig),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UsersCreateManyProvider, CreateUserProvider],
+  providers: [UsersService, UsersCreateManyProvider, CreateUserProvider, FindOneByGoogleIdProvider],
   exports: [UsersService],
 })
 export class UsersModule {}

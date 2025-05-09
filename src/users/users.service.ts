@@ -7,6 +7,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { QueryRunnerAlreadyReleasedError, Repository } from 'typeorm';
@@ -17,6 +18,7 @@ import { ConfigType } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import profileConfig from './config/profile.config';
 import { UsersCreateManyProvider } from './users-create-many.provider';
+import { FindOneByGoogleIdProvider } from './provider/find-one-by-google-id.provider';
 import { CreateManyUserDto } from './DTOs/createManyUser.dto';
 
 @Injectable()
@@ -28,6 +30,7 @@ export class UsersService {
     @Inject(profileConfig.KEY)
     private readonly profileConfiguration: ConfigType<typeof profileConfig>,
     private readonly usersCreateManyProvider: UsersCreateManyProvider,
+    private readonly findOneByGoogleIdProvider: FindOneByGoogleIdProvider,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -109,5 +112,9 @@ export class UsersService {
     } catch (err) {
       throw err;
     }
+  }
+
+  async findOneByGoogleId(googleId: number) {
+    return await this.findOneByGoogleIdProvider.findByGoogleId(googleId);
   }
 }

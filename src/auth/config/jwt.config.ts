@@ -10,4 +10,6 @@ export default registerAs('jwt', () => ({
     process.env.JWT__REFRESH_TOKEN_EXPIRY,
     '46000',
   ),
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
 }));
