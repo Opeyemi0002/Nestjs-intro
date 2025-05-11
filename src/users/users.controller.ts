@@ -10,6 +10,8 @@ import {
   Query,
   UseGuards,
   SetMetadata,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { CreateUserDto } from './DTOs/createUserDto';
 import { UsersService } from './users.service';
@@ -32,7 +34,8 @@ export class UsersController {
   }
 
   @Post('/new')
-  @Auth(AuthType.Bearer, AuthType.None)
+  @Auth(AuthType.None)
+  @UseInterceptors(ClassSerializerInterceptor)
   public async SignUp(@Body() body: CreateUserDto) {
     return await this.createUserProvider.createUser(body);
     //return await this.userService.createUser(body);

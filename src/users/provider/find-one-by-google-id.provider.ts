@@ -10,6 +10,6 @@ export class FindOneByGoogleIdProvider {
   ) {}
 
   async findByGoogleId(googleId: string) {
-    return await this.usersRepository.findOneBy);
+    return await this.usersRepository.findOneBy({ googleId });
   }
 }
