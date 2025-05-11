@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   forwardRef,
   HttpException,
   HttpStatus,
@@ -20,6 +21,7 @@ import profileConfig from './config/profile.config';
 import { UsersCreateManyProvider } from './users-create-many.provider';
 import { FindOneByGoogleIdProvider } from './provider/find-one-by-google-id.provider';
 import { CreateManyUserDto } from './DTOs/createManyUser.dto';
+import { GoogleUser } from 'src/auth/social/interfaces/google-user.interface';
 
 @Injectable()
 export class UsersService {
@@ -58,7 +60,7 @@ export class UsersService {
     }
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return await this.userRepository.findOneBy({ id });
   }
 
@@ -114,7 +116,17 @@ export class UsersService {
     }
   }
 
-  async findOneByGoogleId(googleId: number) {
+  async findOneByGoogleId(googleId: string) {
     return await this.findOneByGoogleIdProvider.findByGoogleId(googleId);
+  }
+  async googleUser(googleUser: GoogleUser) {
+    try {
+      const user = this.userRepository.create(googleUser);
+      return await this.userRepository.save(googleUser);
+    } catch (err) {
+      throw new ConflictException(err, {
+        description: 'Could not create a new user',
+      });
+    }
   }
 }

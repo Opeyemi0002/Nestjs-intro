@@ -29,7 +29,7 @@ export class AuthService {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
   ) {}
 
-  isAuth(id: number) {
+  isAuth(id: string) {
     const user = this.userService.findById(id);
   }
 
@@ -95,7 +95,7 @@ export class AuthService {
     }
   }
 
-  async signInToken<T>(userId: number, expiresIn: number, payload?: T) {
+  async signInToken<T>(userId: string, expiresIn: number, payload?: T) {
     return await this.jwtService.signAsync(
       { sub: userId, ...payload },
       {

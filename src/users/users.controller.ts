@@ -27,7 +27,7 @@ export class UsersController {
     private readonly createUserProvider: CreateUserProvider,
   ) {}
   @Get('/:id')
-  public getUsers(@Param('id', new ParseIntPipe()) id: number) {
+  public getUsers(@Param('id', new ParseIntPipe()) id: string) {
     return this.userService.findById(id);
   }
 

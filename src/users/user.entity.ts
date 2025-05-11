@@ -12,7 +12,7 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
   @Column({
     type: 'varchar',
     length: 96,
@@ -30,7 +30,7 @@ export class User {
   @Column({
     type: 'varchar',
     length: 96,
-    nullable: false,
+    nullable: true,
     unique: true,
   })
   phoneNumber: string;
