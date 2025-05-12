@@ -7,7 +7,7 @@ export default registerAs('jwt', () => ({
   issuer: process.env.JWT_TOKEN_ISSUER,
   expiry: getIntValidation(process.env.JWT_EXPIRY, '3600'),
   refreshTokenExpiry: getIntValidation(
-    process.env.JWT__REFRESH_TOKEN_EXPIRY,
+    process.env.JWT_REFRESH_TOKEN_EXPIRY,
     '46000',
   ),
   googleClientId: process.env.GOOGLE_CLIENT_ID,

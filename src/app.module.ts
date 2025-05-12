@@ -14,9 +14,12 @@ import databaseConfig from './config/database.config';
 import enviromentValidation from './config/enviroment.validation';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './auth/config/jwt.config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
+import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
+import { CloudinaryProvider } from './cloudinary/cloudinary.provider';
+import cloudinaryConfig from './cloudinary/config/cloudinary.config';
 
 const ENV = process.env.NODE_ENV;
 
@@ -28,7 +31,7 @@ const ENV = process.env.NODE_ENV;
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: !ENV ? '.env' : `.env.${ENV}`,
-      load: [appConfig, databaseConfig, jwtConfig],
+      load: [appConfig, databaseConfig, jwtConfig, cloudinaryConfig],
       validationSchema: enviromentValidation,
     }),
     TypeOrmModule.forRootAsync({
@@ -70,7 +73,12 @@ const ENV = process.env.NODE_ENV;
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DataResponseInterceptor,
+    },
     AccessTokenGuard,
+    CloudinaryProvider,
   ],
 })
 export class AppModule {}
