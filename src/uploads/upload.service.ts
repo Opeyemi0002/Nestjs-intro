@@ -4,10 +4,19 @@ import { Express } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
 import { CloudinaryProvider } from 'src/cloudinary/cloudinary.provider';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Upload } from './uploads.entity';
+import { Repository } from 'typeorm';
+import { UploadFile } from './interfaces/upload.interface';
+import { fileType } from './enum/filetype.enum';
 
 @Injectable()
 export class UploadService {
-  constructor(private readonly cloudinaryProvider: CloudinaryProvider) {}
+  constructor(
+    private readonly cloudinaryProvider: CloudinaryProvider,
+    @InjectRepository(Upload)
+    private readonly uploadRepository: Repository<Upload>,
+  ) {}
 
   async uploadFile(file: Express.Multer.File): Promise<any> {
     if (!file) {
@@ -31,7 +40,7 @@ export class UploadService {
 
     const cloudinary = this.cloudinaryProvider.getCloudinary();
 
-    return new Promise((resolve, reject) => {
+    const results: any = await new Promise((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream(
         {
           folder: 'uploads',
@@ -49,6 +58,17 @@ export class UploadService {
 
       upload.end(file.buffer);
     });
+    const uploadFile: UploadFile = {
+      name: finalFileName,
+      type: fileType.IMAGE,
+      size: file.size,
+      mime: file.mimetype,
+      path: results.secure_url,
+    };
+
+    let newUploads = this.uploadRepository.create(uploadFile);
+    await this.uploadRepository.save(newUploads);
+    return 'saved';
   }
 
   // Helper to extract filename without extension
