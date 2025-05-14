@@ -17,7 +17,6 @@ export class CloudinaryProvider {
       api_secret: this.cloudinaryConfiguration.secret,
     });
   }
-  turn;
 
   getCloudinary() {
     return cloudinary;
