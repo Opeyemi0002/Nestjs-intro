@@ -20,6 +20,7 @@ import { AuthenticationGuard } from './auth/guards/authentication/authentication
 import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
 import { UploadModule } from './uploads/upload.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { MailModule } from './mail/mail.module';
 import cloudinaryConfig from './cloudinary/config/cloudinary.config';
 
 const ENV = process.env.NODE_ENV;
@@ -68,6 +69,7 @@ const ENV = process.env.NODE_ENV;
     PaginationModule,
     UploadModule,
     CloudinaryModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
