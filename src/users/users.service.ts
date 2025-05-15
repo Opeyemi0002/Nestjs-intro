@@ -22,6 +22,7 @@ import { UsersCreateManyProvider } from './users-create-many.provider';
 import { FindOneByGoogleIdProvider } from './provider/find-one-by-google-id.provider';
 import { CreateManyUserDto } from './DTOs/createManyUser.dto';
 import { GoogleUser } from 'src/auth/social/interfaces/google-user.interface';
+import { MailService } from 'src/mail/provider/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +34,7 @@ export class UsersService {
     private readonly profileConfiguration: ConfigType<typeof profileConfig>,
     private readonly usersCreateManyProvider: UsersCreateManyProvider,
     private readonly findOneByGoogleIdProvider: FindOneByGoogleIdProvider,
+    private readonly mailService: MailService,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -47,6 +49,8 @@ export class UsersService {
       }
       let newUser = this.userRepository.create(createUserDto);
       newUser = await this.userRepository.save(newUser);
+
+      await this.mailService.sendUserWelcome(newUser);
       return {
         response: 'Success',
         user: newUser,

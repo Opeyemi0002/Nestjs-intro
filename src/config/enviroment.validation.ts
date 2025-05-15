@@ -20,6 +20,6 @@ export default Joi.object({
   CLOUDINARY_API_KEY: Joi.string().required(),
   CLOUDINARY_API_SECRET: Joi.string().required(),
   MAIL_HOST: Joi.string().required(),
-  SMPTP_USERNAME: Joi.string().required(),
-  SMPTP_PASSWORD: Joi.string().required(),
+  SMTP_USERNAME: Joi.string().required(),
+  SMTP_PASSWORD: Joi.string().required(),
 });
