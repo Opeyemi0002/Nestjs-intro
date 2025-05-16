@@ -30,8 +30,7 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @Inject(profileConfig.KEY)
-    private readonly profileConfiguration: ConfigType<typeof profileConfig>,
+
     private readonly usersCreateManyProvider: UsersCreateManyProvider,
     private readonly findOneByGoogleIdProvider: FindOneByGoogleIdProvider,
     private readonly mailService: MailService,
@@ -39,8 +38,8 @@ export class UsersService {
 
   public async createUser(createUserDto: CreateUserDto) {
     try {
-      const existingUser = await this.userRepository.findOne({
-        where: { email: createUserDto.email },
+      const existingUser = await this.userRepository.findOneBy({
+        email: createUserDto.email,
       });
       if (existingUser) {
         throw new BadRequestException('Error logging in', {
@@ -49,8 +48,12 @@ export class UsersService {
       }
       let newUser = this.userRepository.create(createUserDto);
       newUser = await this.userRepository.save(newUser);
+      try {
+        await this.mailService.sendUserWelcome(newUser);
+      } catch (err) {
+        throw err;
+      }
 
-      await this.mailService.sendUserWelcome(newUser);
       return {
         response: 'Success',
         user: newUser,
@@ -68,10 +71,6 @@ export class UsersService {
     return await this.userRepository.findOneBy({ id });
   }
 
-  async getall() {
-    console.log(this.profileConfiguration);
-    return 'thanks';
-  }
   async findall(limit: number, page: number) {
     try {
       let users = await this.userRepository.find({

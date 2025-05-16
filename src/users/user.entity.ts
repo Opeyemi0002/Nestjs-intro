@@ -14,6 +14,7 @@ import {
 export class User {
   @PrimaryGeneratedColumn()
   id: string;
+
   @Column({
     type: 'varchar',
     length: 96,

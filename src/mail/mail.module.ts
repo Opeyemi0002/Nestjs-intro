@@ -20,15 +20,15 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
             user: config.get('appConfig.smtpUsername'),
             pass: config.get('appConfig.smtpPassword'),
           },
-          default: {
-            from: `My Blog <no-reply@nestjs-blog.com>`,
-          },
-          template: {
-            dir: join(__dirname, 'templates'),
-            adapter: new EjsAdapter(),
-            options: {
-              strict: false,
-            },
+        },
+        default: {
+          from: `My Blog <no-reply@nestjs-blog.com>`,
+        },
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new EjsAdapter(),
+          options: {
+            strict: false,
           },
         },
       }),
