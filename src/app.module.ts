@@ -22,6 +22,7 @@ import { UploadModule } from './uploads/upload.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MailModule } from './mail/mail.module';
 import cloudinaryConfig from './cloudinary/config/cloudinary.config';
+import { MongooseModule } from '@nestjs/mongoose';
 
 const ENV = process.env.NODE_ENV;
 
@@ -68,6 +69,14 @@ const ENV = process.env.NODE_ENV;
     }),
     PaginationModule,
     UploadModule,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<string>('appConfig.mongoDbUrl'),
+        dbName: 'nestjs-blog',
+      }),
+    }),
     CloudinaryModule,
     MailModule,
   ],

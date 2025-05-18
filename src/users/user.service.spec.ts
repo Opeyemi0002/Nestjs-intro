@@ -4,9 +4,10 @@ import { UsersCreateManyProvider } from './users-create-many.provider';
 import { FindOneByGoogleIdProvider } from './provider/find-one-by-google-id.provider';
 import { AuthService } from 'src/auth/auth.service';
 import { MailService } from 'src/mail/provider/mail.service';
-import { DataSource } from 'typeorm';
+import { DataSource, ObjectLiteral } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './user.entity';
+import { CreateManyUserDto } from './DTOs/createManyUser.dto';
 
 describe('UserService', () => {
   let userService: UsersService;
@@ -29,7 +30,7 @@ describe('UserService', () => {
         },
         {
           provide: MailService,
-          useValue: {},
+          useValue: {sendUserWelcome:jest.fn(()=> Promise.resolve())},
         },
         {
           provide: DataSource,
