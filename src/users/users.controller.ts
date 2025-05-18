@@ -41,12 +41,6 @@ export class UsersController {
     //return await this.userService.createUser(body);
   }
 
-  @Get('/profile/user')
-  async find() {
-    console.log('Controller hit');
-    return await this.userService.getall();
-  }
-
   @Get('/users/all')
   async findall(limit: number, id: number) {
     return;

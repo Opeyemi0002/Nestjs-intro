@@ -13,14 +13,22 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
 import { FindOneByGoogleIdProvider } from './provider/find-one-by-google-id.provider';
+import { MongooseModule } from '@nestjs/mongoose';
+import { userSchema } from './user.schema';
 @Module({
   imports: [
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([User]),
     ConfigModule.forFeature(profileConfig),
+    MongooseModule.forFeature([{ name: User.name, schema: userSchema }]),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UsersCreateManyProvider, CreateUserProvider, FindOneByGoogleIdProvider],
+  providers: [
+    UsersService,
+    UsersCreateManyProvider,
+    CreateUserProvider,
+    FindOneByGoogleIdProvider,
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}
