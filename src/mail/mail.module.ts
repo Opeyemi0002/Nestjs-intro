@@ -1,28 +1,29 @@
 import { Global, Module } from '@nestjs/common';
-import { MailService } from './provider/mail.service';
+import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
+import { EjsAdapter } from '@nestjs-modules/mailer/adapters/ejs.adapter';
 import { join } from 'path';
-import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/user.entity';
 
 @Global()
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         transport: {
-          host: config.get('appConfig.mailHost'),
+          host: config.get<string>('mail.host'),
+          port: config.get<number>('mail.port'),
           secure: false,
-          port: 2525,
           auth: {
-            user: config.get('appConfig.smtpUsername'),
-            pass: config.get('appConfig.smtpPassword'),
+            user: config.get<string>('mail.username'),
+            pass: config.get<string>('mail.password'),
           },
         },
         default: {
-          from: `My Blog <no-reply@nestjs-blog.com>`,
+          from: `My application blog <no-reply@nesjsblog.com>`,
         },
         template: {
           dir: join(__dirname, 'templates'),

@@ -1,10 +1,10 @@
+import { Post } from 'src/posts/post.entity';
 import { Exclude } from 'class-transformer';
-import { Post } from 'src/post/post.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,34 +13,26 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({
     type: 'varchar',
-    length: 96,
     nullable: false,
+    length: 92,
   })
   firstName: string;
 
   @Column({
     type: 'varchar',
-    length: 96,
-    nullable: false,
+    nullable: true,
+    length: 92,
   })
   lastName: string;
 
   @Column({
     type: 'varchar',
-    length: 96,
-    nullable: true,
-    unique: true,
-  })
-  phoneNumber: string;
-
-  @Column({
-    type: 'varchar',
-    length: 96,
     nullable: false,
+    length: 92,
     unique: true,
   })
   email: string;
@@ -48,24 +40,28 @@ export class User {
   @Exclude()
   @Column({
     type: 'varchar',
-    length: 96,
     nullable: true,
+    length: 1012,
   })
-  password: string;
-
-  @OneToMany(() => Post, (post) => post.author)
-  posts: Post[];
+  password: string | null;
 
   @Exclude()
   @Column({
     type: 'varchar',
     nullable: true,
+    unique: true,
   })
-  googleId: string;
+  googleId: string | null;
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
 
   @CreateDateColumn()
-  createdate?: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updateDate?: Date;
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

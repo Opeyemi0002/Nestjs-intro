@@ -1,34 +1,18 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { UserService } from './providers/users.service';
 import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { AuthModule } from 'src/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersCreateManyProvider } from './users-create-many.provider';
-import { CreateUserProvider } from './provider/create-user.provider';
-import profileConfig from './config/profile.config';
-import jwtConfig from 'src/auth/config/jwt.config';
-import { JwtModule } from '@nestjs/jwt';
-import { APP_GUARD } from '@nestjs/core';
-import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
-import { FindOneByGoogleIdProvider } from './provider/find-one-by-google-id.provider';
-import { MongooseModule } from '@nestjs/mongoose';
-import { userSchema } from './user.schema';
+import { ConfigModule } from '@nestjs/config';
+import axiosConfig from 'src/config/axios.config';
+
 @Module({
-  imports: [
-    forwardRef(() => AuthModule),
-    TypeOrmModule.forFeature([User]),
-    ConfigModule.forFeature(profileConfig),
-    MongooseModule.forFeature([{ name: User.name, schema: userSchema }]),
-  ],
+  providers: [UserService],
   controllers: [UsersController],
-  providers: [
-    UsersService,
-    UsersCreateManyProvider,
-    CreateUserProvider,
-    FindOneByGoogleIdProvider,
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    ConfigModule.forFeature(axiosConfig),
   ],
-  exports: [UsersService],
+  exports: [UserService],
 })
-export class UsersModule {}
+export class UserModule {}

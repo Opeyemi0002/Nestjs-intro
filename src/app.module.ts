@@ -1,83 +1,59 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { PostModule } from './post/post.module';
+import { UserModule } from './users/users.module';
+import { PostModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TagsModule } from './tags/tags.module';
 import { MetaoptionModule } from './metaoption/metaoption.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PaginationModule } from './common/pagination/pagination.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
-import enviromentValidation from './config/enviroment.validation';
+import environmentValidation from './config/environment.validation';
+import jwtConfig from './config/jwt.config';
+import { AuthenticationGuard } from './auth/guards/authentication.guard';
 import { JwtModule } from '@nestjs/jwt';
-import jwtConfig from './auth/config/jwt.config';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
-import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthGuard } from './auth/guards/auth.guard';
 import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
-import { UploadModule } from './uploads/upload.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { S3Module } from './storage/s3/s3.module';
 import { MailModule } from './mail/mail.module';
-import cloudinaryConfig from './cloudinary/config/cloudinary.config';
-import { MongooseModule } from '@nestjs/mongoose';
 
-const ENV = process.env.NODE_ENV;
+import mailtrapConfig from './config/mailtrap.config';
 
 @Module({
   imports: [
-    UsersModule,
+    UserModule,
     PostModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: !ENV ? '.env' : `.env.${ENV}`,
-      load: [appConfig, databaseConfig, jwtConfig, cloudinaryConfig],
-      validationSchema: enviromentValidation,
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
+      load: [appConfig, databaseConfig, mailtrapConfig],
+      validationSchema: environmentValidation,
     }),
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: async (config: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('database.host'),
-        port: +configService.get('database.port'),
-        username: configService.get('database.username'),
-        password: configService.get('database.password'),
-        database: configService.get('database.name'),
-        autoLoadEntities: configService.get('database.autoLoadEntities'),
-        synchronize: configService.get('database.synchronize'),
+        host: config.get<string>('database.host'),
+        port: config.get<number>('database.port'),
+        autoLoadEntities: config.get<boolean>('database.autoLoadEntities'),
+        database: config.get<string>('database.name'),
+        username: config.get<string>('database.username'),
+        password: config.get<string>('database.password'),
+        synchronize: config.get<boolean>('database.synchronize'),
       }),
     }),
     TagsModule,
     MetaoptionModule,
-    ConfigModule.forFeature(jwtConfig),
-    JwtModule.registerAsync({
-      global: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('jwt.key'),
-        signOptions: {
-          expiresIn: configService.get('jwt.expiry'),
-          audience: configService.get('jwt.audience'),
-          issuer: configService.get('jwt.issuer'),
-        },
-      }),
-    }),
     PaginationModule,
-    UploadModule,
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        uri: config.get<string>('appConfig.mongoDbUrl'),
-        dbName: 'nestjs-blog',
-      }),
-    }),
-    CloudinaryModule,
+    S3Module,
     MailModule,
   ],
   controllers: [AppController],
@@ -91,8 +67,7 @@ const ENV = process.env.NODE_ENV;
       provide: APP_INTERCEPTOR,
       useClass: DataResponseInterceptor,
     },
-    AccessTokenGuard,
+    AuthGuard,
   ],
-  exports: [],
 })
 export class AppModule {}

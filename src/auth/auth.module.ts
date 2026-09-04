@@ -1,38 +1,32 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { UsersModule } from 'src/users/users.module';
-import { HashingProvider } from './providers/hashing.provider';
-import { BcryptProvider } from './providers/bcrypt.provider';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
-import jwtConfig from './config/jwt.config';
+import { AuthService } from './providers/auth.service';
+import { HashService } from './providers/hash.service';
+import { BcryptService } from './providers/bcrypt.service';
+import { UserModule } from 'src/users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import jwtConfig from 'src/config/jwt.config';
+import googleAuthConfig from 'src/config/google-auth.config';
 import { JwtModule } from '@nestjs/jwt';
-import { GoogleAuthenticationController } from './social/google-authentication.controller';
-import { GoogleAuthenticationService } from './social/google-authentication.service';
+import { TokenService } from './providers/tokenservice.service';
+import { GoogleAuthService } from './providers/google-auth.service';
 
 @Module({
-  imports: [
-    forwardRef(() => UsersModule),
-    ConfigModule.forFeature(jwtConfig),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('jwt.key'),
-        signOptions: {
-          expiresIn: configService.get('jwt.expiry'),
-          audience: configService.get('jwt.audience'),
-          issuer: configService.get('jwt.issuer'),
-        },
-      }),
-    }),
-  ],
-  controllers: [AuthController, GoogleAuthenticationController],
+  controllers: [AuthController],
   providers: [
     AuthService,
-    { provide: HashingProvider, useClass: BcryptProvider },
-    GoogleAuthenticationService,
+    {
+      provide: HashService,
+      useClass: BcryptService,
+    },
+    TokenService,
+    GoogleAuthService,
   ],
-  exports: [AuthService, HashingProvider],
+  imports: [
+    UserModule,
+    ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(googleAuthConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
+  ],
 })
 export class AuthModule {}

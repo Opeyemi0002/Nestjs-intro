@@ -1,42 +1,26 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseIntPipe,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignInDto } from './Dtos/signIn.dto';
-import { AccessTokenGuard } from './guards/access-token/access-token.guard';
-import { Auth } from './decorators/auth.decorator';
-import { AuthType } from './enum/auth-type.enum';
-import { RefreshTokenDto } from './Dtos/refreshtoken.dto';
-import { Response } from 'express';
+import { Body, Controller, Post } from '@nestjs/common';
+import { AuthService } from './providers/auth.service';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { SignInDto } from 'src/users/dtos/Signin.dto';
+import { Authtype } from './enum/enum.authtype';
+import { Auth } from './decorator/auth.decorator';
+import { RefreshTokenDto } from './Dtos/refresh.token';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Get('/checkauth')
-  checkAuth(@Param('id', ParseIntPipe) id: string) {
-    return this.authService.isAuth(id);
+  @Auth(Authtype.None)
+  @Post('/register')
+  async registerUser(@Body() body: CreateUserDto) {
+    return await this.authService.register(body);
   }
-  //@UseGuards(AccessTokenGuard)
-  @Post('/signIn')
-  @HttpCode(HttpStatus.OK)
-  @Auth(AuthType.None)
-  signInUser(@Body() body: SignInDto) {
-    return this.authService.signIn(body);
+  @Auth(Authtype.None)
+  @Post('/login')
+  async logInUser(@Body() body: SignInDto) {
+    return await this.authService.signIn(body);
   }
-  @Post('/refreshToken')
-  refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refreshTokens(refreshTokenDto);
+  @Post('refresh')
+  async refreshToken(@Body() refreshToken: RefreshTokenDto) {
+    return await this.authService.refreshAccessToken(refreshToken);
   }
-  @Get('/google')
-  redirectGoogle(@Res() res: Response) {}
 }
